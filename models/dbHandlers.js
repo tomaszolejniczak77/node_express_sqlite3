@@ -10,7 +10,10 @@ module.exports = {
     update,
     addItem,
     findItemById,
-    findUserItems
+    findUserItems,
+    removeItem,
+    updateItem
+
 }
 
 async function add(user) {
@@ -62,11 +65,29 @@ function findUserItems(user_id){
  return db("users")
  .join("items", "users.id", "items.item_id")
  .select(
-    "users.id",
+    // "users.id",
     "users.name",
     "items.item_id",
+    "items.id",
     "items.sender",
     "items.text"
  )
  .where("items.item_id", user_id)
+}
+
+function removeItem(id) {
+ return db("items")
+ .where({ id })
+ .del()
+}
+
+function updateItem(id, changes) {
+    return (
+        db("items")
+        .where({ id })
+        .update(changes)
+        .then(()=> {
+            return findItemById(id)
+        })
+    )
 }
